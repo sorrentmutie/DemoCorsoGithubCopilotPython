@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tris</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        display: grid;
+        min-height: 100vh;
+        place-items: center;
+        margin: 0;
+        background: #f4f4f5;
+        color: #18181b;
+      }
+
+      main {
+        width: min(90vw, 28rem);
+        padding: 2rem;
+        border-radius: 1rem;
+        background: white;
+        box-shadow: 0 0.5rem 2rem #0002;
+        text-align: center;
+      }
+
+      .board {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.5rem;
+        margin: 1.5rem 0;
+      }
+
+      .cell {
+        aspect-ratio: 1;
+        border: 2px solid #52525b;
+        border-radius: 0.5rem;
+        background: #fafafa;
+        font-size: 2.5rem;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .cell:disabled {
+        color: #18181b;
+        cursor: default;
+        opacity: 0.75;
+      }
+
+      .message {
+        min-height: 1.5rem;
+        color: #b91c1c;
+      }
+
+      .reset {
+        padding: 0.7rem 1rem;
+        border: 0;
+        border-radius: 0.5rem;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Gioca a tris</h1>
+      {% if winner %}
+        <p><strong>Ha vinto il giocatore {{ winner }}!</strong></p>
+      {% elif draw %}
+        <p><strong>Pareggio!</strong></p>
+      {% else %}
+        <p>Turno del giocatore <strong>{{ current_player }}</strong></p>
+      {% endif %}
+
+      {% if message %}
+        <p class="message" role="alert">{{ message }}</p>
+      {% else %}
+        <p class="message" aria-hidden="true"></p>
+      {% endif %}
+
+      <div class="board" aria-label="Griglia del tris">
+        {% for cell in board %}
+          <form method="post" action="{{ url_for('move') }}">
+            <input type="hidden" name="position" value="{{ loop.index }}">
+            <button
+              class="cell"
+              type="submit"
+              aria-label="Casella {{ loop.index }}"
+              {% if cell != " " or winner or draw %}disabled{% endif %}
+            >{{ cell if cell != " " else loop.index }}</button>
+          </form>
+        {% endfor %}
+      </div>
+
+      <form method="post" action="{{ url_for('reset') }}">
+        <button class="reset" type="submit">Nuova partita</button>
+      </form>
+    </main>
+  </body>
+</html>
